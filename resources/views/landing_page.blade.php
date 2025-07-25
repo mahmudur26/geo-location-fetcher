@@ -22,7 +22,7 @@
 </head>
 <body>
 
-<h1>📍 Your Geolocation Data</h1>
+<h1>📍 Your Geolocation Data is here</h1>
 <div id="geoStatus">Fetching location...</div>
 
 </body>

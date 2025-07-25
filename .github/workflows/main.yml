@@ -1,0 +1,30 @@
+name: 🚀 Deploy Selected Laravel Folders
+
+on:
+  push:
+    branches:
+      - production
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Install lftp
+      run: sudo apt-get install lftp
+
+    - name: Upload selected folders via FTP
+      run: |
+        lftp -c "
+        open -u ${{ secrets.FTP_USERNAME }},${{ secrets.FTP_PASSWORD }} ${{ secrets.FTP_HOST }};
+        mirror -R --verbose app /public_html/playground/app;
+        mirror -R --verbose bootstrap /public_html/playground/bootstrap;
+        mirror -R --verbose config /public_html/playground/config;
+        mirror -R --verbose database /public_html/playground/database;
+        mirror -R --verbose public /public_html/playground/public;
+        mirror -R --verbose resources /public_html/playground/resources;
+        mirror -R --verbose routes /public_html/playground/routes;
+        "

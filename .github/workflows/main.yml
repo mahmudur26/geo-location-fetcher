@@ -1,30 +1,42 @@
-name: 🚀 Deploy Selected Laravel Folders
-
 on:
   push:
     branches:
       - production
-
+name: 🚀 Deploy playground application on push
 jobs:
-  deploy:
+  web-deploy:
+    name: 🎉 Deploy
     runs-on: ubuntu-latest
-
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+      - name: 🚚 Get latest code
+        uses: actions/checkout@v4
 
-    - name: Install lftp
-      run: sudo apt-get install lftp
+      - name: 📦 Zip specific folders and files
+        run: zip -r latest.zip app bootstrap config database public resources routes
 
-    - name: Upload selected folders via FTP
-      run: |
-        lftp -c "
-        open -u ${{ secrets.FTP_USERNAME }},${{ secrets.FTP_PASSWORD }} ${{ secrets.FTP_HOST }};
-        mirror -R --verbose app /public_html/playground/app;
-        mirror -R --verbose bootstrap /public_html/playground/bootstrap;
-        mirror -R --verbose config /public_html/playground/config;
-        mirror -R --verbose database /public_html/playground/database;
-        mirror -R --verbose public /public_html/playground/public;
-        mirror -R --verbose resources /public_html/playground/resources;
-        mirror -R --verbose routes /public_html/playground/routes;
-        "
+      - name: Create directory for zip file
+        run: mkdir -p zip
+
+      - name: Copy zip file to zip directory
+        run: cp latest.zip zip/latest.zip
+
+      - name: 📂 Transfer zip to server via FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: 217.21.74.171
+          port: 21
+          username: ${{ secrets.username }}
+          password: ${{ secrets.password }}
+          local-dir: ./zip/
+          server-dir: ./zip/
+
+      - name: 📂 SSH into server and unzip
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.ssh_ip }}
+          port: ${{ secrets.ssh_port }}
+          username: ${{ secrets.ssh_username }}
+          password: ${{ secrets.ssh_password }}
+          script: |
+            unzip -o /home/u188704625/domains/mahmudur.net/public_html/playground/zip/latest.zip -d /home/u188704625/domains/mahmudur.net/public_html/playground/
+            rm /home/u188704625/domains/mahmudur.net/public_html/playground/zip/latest.zip

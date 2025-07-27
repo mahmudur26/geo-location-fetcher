@@ -3,3 +3,8 @@
     height: 500px;
     z-index: 0;
 }
+body{
+     font-family: "Intel One Mono", monospace;
+     font-optical-sizing: auto;
+     font-style: normal;
+ }

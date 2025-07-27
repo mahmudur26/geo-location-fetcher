@@ -8,16 +8,16 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
     <link rel="stylesheet" href="{{ asset('css/geo-location-fetch/style.css') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Intel+One+Mono:ital,wght@0,300..700;1,300..700&display=swap" rel="stylesheet">
 </head>
 <body>
 <div id="map" style="height: 500px;"></div>
 <div class="container d-flex justify-content-center">
-
-
-
-    <div class="table-section">
-        <table class="table table-responsive table-bordered w-80">
-            <thead>
+    <div class="table-section table-responsive">
+        <table class="table align-middle table-bordered w-80">
+            <thead class="table-dark">
             <tr>
                 <th class="text-center">IP</th>
                 <th class="text-center">Latitude</th>
@@ -33,7 +33,7 @@
                     <td>{{ $data['latitude'] }}</td>
                     <td>{{ $data['longitude'] }}</td>
                     <td>{{ $data['full_address'] }}</td>
-                    <td>{{ $data['accuracy_in_meter'] }}</td>
+                    <td class="text-center">{{ $data['accuracy_in_meter'] }}</td>
                 </tr>
             @endforeach
             </tbody>

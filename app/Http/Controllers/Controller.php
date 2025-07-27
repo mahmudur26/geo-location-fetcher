@@ -21,12 +21,15 @@ class Controller
             ];
             $data['coordinates'][] = [$item->latitude, $item->longitude];
         }
-        $data['geo_data'] = array_slice($data['geo_data'], 0, 5);
+        $data['geo_data'] = array_slice($data['geo_data'], 0, 10);
 //dd($data);
         return view('landing_page')->with($data)    ;
     }
 
     public function geo_info_store(Request $request){
+        if(env('APP_ENV') == 'local'){
+            return response()->json(['status' => 'success']);
+        }
         $ip = request()->ip();
 
         $latitude = $request->input('latitude') ?? NULL;

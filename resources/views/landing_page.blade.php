@@ -16,7 +16,7 @@
 
 
     <div class="table-section">
-        <table class="table table-bordered w-75">
+        <table class="table table-bordered w-80">
             <thead>
             <tr>
                 <th class="text-center">IP</th>

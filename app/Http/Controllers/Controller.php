@@ -10,10 +10,25 @@ use Illuminate\Support\Facades\Log;
 class Controller
 {
     public function index(){
-        return view('landing_page');
+        $geo_data = GeoData::query()->orderByDesc('id')->get();
+        foreach($geo_data as $item){
+            $data['geo_data'][] = [
+                'ip' => $item->ip,
+                'latitude' => $item->latitude,
+                'longitude' => $item->longitude,
+                'full_address' => $item->full_formatted_address,
+                'accuracy_in_meter' => $item->accuracy_in_meter,
+            ];
+            $data['coordinates'][] = [$item->latitude, $item->longitude];
+        }
+        $data['geo_data'] = array_slice($data['geo_data'], 0, 5);
+//dd($data);
+        return view('landing_page')->with($data)    ;
     }
 
     public function geo_info_store(Request $request){
+        return response()->json(['status' => 'success']);
+
         $ip = request()->ip();
 
         $latitude = $request->input('latitude') ?? NULL;

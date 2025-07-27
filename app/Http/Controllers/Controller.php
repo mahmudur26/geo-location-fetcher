@@ -27,8 +27,6 @@ class Controller
     }
 
     public function geo_info_store(Request $request){
-        return response()->json(['status' => 'success']);
-
         $ip = request()->ip();
 
         $latitude = $request->input('latitude') ?? NULL;

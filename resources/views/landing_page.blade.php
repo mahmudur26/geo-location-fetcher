@@ -4,33 +4,67 @@
     <meta charset="UTF-8">
     <title>Real-Time Geolocation</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <style>
-        body {
-            font-family: sans-serif;
-            margin: 40px;
-            text-align: center;
-        }
-        .location-data {
-            background: #f0f8ff;
-            padding: 20px;
-            border-radius: 8px;
-            display: inline-block;
-            margin-top: 20px;
-        }
-    </style>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
+    <link rel="stylesheet" href="{{ asset('css/geo-location-fetch/style.css') }}">
 </head>
 <body>
+<div id="map" style="height: 500px;"></div>
+<div class="container d-flex justify-content-center">
 
-<h1>📍 Your Geolocation Data is here</h1>
-<div id="geoStatus">Fetching location...</div>
+
+
+    <div class="table-section">
+        <table class="table table-bordered w-75">
+            <thead>
+            <tr>
+                <th class="text-center">IP</th>
+                <th class="text-center">Latitude</th>
+                <th class="text-center">Longitude</th>
+                <th class="text-center">Full Address</th>
+                <th class="text-center">Accuracy (meter)</th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach($geo_data as $data)
+                <tr>
+                    <td>{{ $data['ip'] }}</td>
+                    <td>{{ $data['latitude'] }}</td>
+                    <td>{{ $data['longitude'] }}</td>
+                    <td>{{ $data['full_address'] }}</td>
+                    <td>{{ $data['accuracy_in_meter'] }}</td>
+                </tr>
+            @endforeach
+            </tbody>
+        </table>
+    </div>
+
+
+</div>
 
 </body>
 </html>
 
-
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
+    const geoCoordinates = @json($coordinates);
+    document.addEventListener("DOMContentLoaded", function () {
+        const map = L.map('map').setView([23.8103, 90.4125], 3); // Set to a neutral zoom
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(map);
+
+        // Loop through coordinates and add markers
+        geoCoordinates.forEach(([lat, lng]) => {
+            if (lat && lng) {
+                L.marker([parseFloat(lat), parseFloat(lng)]).addTo(map)
+                    .bindPopup(`Lat: ${lat}, Lng: ${lng}`);
+            }
+        });
+    });
+
     $(document).ready(function () {
         // Default to null
         let latitude = null;

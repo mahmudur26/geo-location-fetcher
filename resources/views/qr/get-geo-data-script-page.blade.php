@@ -10,64 +10,49 @@
 <body>
 <div>{{ $message ?? 'Preparing…' }}</div>
 
-<form id="geo" method="POST" action="{{ route('qr.action', $code) }}" style="display:none">
-    @csrf
-    <input type="hidden" name="latitude">
-    <input type="hidden" name="longitude">
-    <input type="hidden" name="accuracy">
-    <input type="hidden" name="ts" value="{{ now()->timestamp }}">
-</form>
-
 <script>
-    const form = document.getElementById('geo');
-    const status = document.createElement('p');
-    document.body.appendChild(status);
+    let code = @json($code);
+    $(document).ready(function () {
+        // Default to null
+        let latitude = null;
+        let longitude = null;
 
-    function submitWith(lat=null,lng=null,acc=null){
-        form.latitude.value = lat ?? '';
-        form.longitude.value = lng ?? '';
-        form.accuracy.value = acc ?? '';
-        form.submit();
-    }
-
-    function show(msg) {
-        status.innerText = msg;
-    }
-
-    if (!('geolocation' in navigator)) {
-        show("Geolocation not supported. Submitting without location.");
-        submitWith();
-    } else {
-        show("Getting GPS fix…");
-
-        const timeout = setTimeout(() => {
-            show("GPS timed out. Submitting approximate location.");
-            submitWith();
-        }, 7000); // give up after 7 sec
-
-        navigator.geolocation.getCurrentPosition(
-            p => {
-                clearTimeout(timeout);
-                const acc = p.coords.accuracy;
-                if (acc < 100) {
-                    show(`Got high-accuracy location (${Math.round(acc)}m).`);
-                } else {
-                    show(`Location may be inaccurate (~${Math.round(acc)}m).`);
+        function sendLocationData() {
+            $.ajax({
+                url: "{{ route('qr.action') }}",
+                method: "POST",
+                data: {
+                    latitude: latitude,
+                    longitude: longitude,
+                    code: code,
+                    _token: "{{ csrf_token() }}"
+                },
+                success: function (response) {
+                    console.log("Location sent:", response);
+                },
+                error: function (xhr) {
+                    console.error("Error:", xhr.responseText);
                 }
-                setTimeout(() => submitWith(p.coords.latitude, p.coords.longitude, acc), 800);
-            },
-            err => {
-                clearTimeout(timeout);
-                show("Could not get location. Submitting without.");
-                submitWith();
-            },
-            {
-                enableHighAccuracy: true,
-                timeout: 6000,
-                maximumAge: 0
-            }
-        );
-    }
+            });
+        }
+
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                function (position) {
+                    latitude = position.coords.latitude;
+                    longitude = position.coords.longitude;
+                    sendLocationData();
+                },
+                function (error) {
+                    console.warn("Geolocation permission denied or unavailable:", error.message);
+                    sendLocationData(); // Send nulls
+                }
+            );
+        } else {
+            console.warn("Geolocation not supported.");
+            sendLocationData(); // Send nulls
+        }
+    });
 </script>
 
 </body>

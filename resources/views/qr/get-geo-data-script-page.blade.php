@@ -20,23 +20,55 @@
 
 <script>
     const form = document.getElementById('geo');
+    const status = document.createElement('p');
+    document.body.appendChild(status);
+
     function submitWith(lat=null,lng=null,acc=null){
         form.latitude.value = lat ?? '';
         form.longitude.value = lng ?? '';
         form.accuracy.value = acc ?? '';
-        form.submit(); // Browser follows whatever response the server returns
+        form.submit();
+    }
+
+    function show(msg) {
+        status.innerText = msg;
     }
 
     if (!('geolocation' in navigator)) {
+        show("Geolocation not supported. Submitting without location.");
         submitWith();
     } else {
-        const t = setTimeout(() => submitWith(), 1500); // don’t keep user waiting
+        show("Getting GPS fix…");
+
+        const timeout = setTimeout(() => {
+            show("GPS timed out. Submitting approximate location.");
+            submitWith();
+        }, 7000); // give up after 7 sec
+
         navigator.geolocation.getCurrentPosition(
-            p => { clearTimeout(t); submitWith(p.coords.latitude, p.coords.longitude, p.coords.accuracy ?? null); },
-            _ => { clearTimeout(t); submitWith(); },
-            { enableHighAccuracy: true, timeout: 1200, maximumAge: 0 }
+            p => {
+                clearTimeout(timeout);
+                const acc = p.coords.accuracy;
+                if (acc < 100) {
+                    show(`Got high-accuracy location (${Math.round(acc)}m).`);
+                } else {
+                    show(`Location may be inaccurate (~${Math.round(acc)}m).`);
+                }
+                setTimeout(() => submitWith(p.coords.latitude, p.coords.longitude, acc), 800);
+            },
+            err => {
+                clearTimeout(timeout);
+                show("Could not get location. Submitting without.");
+                submitWith();
+            },
+            {
+                enableHighAccuracy: true,
+                timeout: 6000,
+                maximumAge: 0
+            }
         );
     }
 </script>
+
 </body>
 </html>

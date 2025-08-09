@@ -12,6 +12,7 @@
 
 <script>
     let code = @json($code);
+    const postUrl = "{{ route('qr.action', $code) }}";
     $(document).ready(function () {
         // Default to null
         let latitude = null;
@@ -19,7 +20,8 @@
 
         function sendLocationData() {
             $.ajax({
-                url: "{{ route('qr.action') }}",
+                url: postUrl,
+                params: code,
                 method: "POST",
                 data: {
                     latitude: latitude,

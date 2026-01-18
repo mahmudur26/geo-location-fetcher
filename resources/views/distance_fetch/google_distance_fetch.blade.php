@@ -60,7 +60,7 @@
     <div id="result"></div>
 </div>
 
-<!-- Load Google Maps JavaScript API -->
+
 <script src="https://maps.googleapis.com/maps/api/js?key={{ env('GOOGLE_MAP_API') }}&libraries=places"></script>
 <script>
     let originAutocomplete, destinationAutocomplete;

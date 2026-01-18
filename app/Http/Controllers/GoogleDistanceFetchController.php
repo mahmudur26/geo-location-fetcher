@@ -10,4 +10,9 @@ class GoogleDistanceFetchController extends Controller
     {
         return view('distance_fetch.google_distance_fetch');
     }
+
+    public function distance_fetch_leaflet()
+    {
+        return view('distance_fetch.trial_2');
+    }
 }

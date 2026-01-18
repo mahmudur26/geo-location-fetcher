@@ -13,3 +13,4 @@ Route::get('/qr/{code}', [QRCodeGeoController::class, 'preview'])->name('qr.prev
 Route::post('/qr/{code}', [QRCodeGeoController::class, 'action'])->name('qr.action');
 
 Route::get('/google-distance', [GoogleDistanceFetchController::class, 'distance_fetch']);
+Route::get('/google-distance-leaflet', [GoogleDistanceFetchController::class, 'distance_fetch_leaflet']);

@@ -23,7 +23,7 @@ class Controller
         }
         $data['geo_data'] = array_slice($data['geo_data'], 0, 10);
 //dd($data);
-        return view('landing_page')->with($data)    ;
+        return view('landing_page')->with($data);
     }
 
     public function geo_info_store(Request $request){
